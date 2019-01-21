@@ -26,7 +26,7 @@ func dbgErr(lvl int, where string, err error) {
 	}
 }
 
-func die(fmt string, where string, v ...interface{}) {
+func die(where string, fmt string, v ...interface{}) {
 	dbgLogger.Fatalf(where + ": " + fmt + "\n", v...)
 }
 
