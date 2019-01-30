@@ -18,6 +18,7 @@ var (
 	optRcvSize        = flag.Int("rcv", 1000, "Receive packet buffer size")
 
 	optKeyMAC         = flag.Bool("keyMAC", false, "use MAC addresses as InfluxDB tags")
+	optKeyInterface   = flag.Bool("keyInterface", false, "use interface name as InfluxDB tag")
 	optDropOut        = flag.Bool("dropOut", true, "drop data on \"output\" flow direction")
 
 	optIpfixCache     = flag.Int("ipfixCache", 1000, "IPFIX session cache size")
@@ -27,7 +28,7 @@ var (
 	optInfluxUser     = flag.String("influxUser", "", "InfluxDB username")
 	optInfluxPass     = flag.String("influxPass", "", "InfluxDB password")
 	optInfluxTimeout  = flag.Duration("influxTimeout", time.Duration(15 * time.Second), "InfluxDB write timeout")
-	optInfluxDB       = flag.String("influxDB", "ipfix", "InfluxDB database name")
+	optInfluxDB       = flag.String("influxDB", "ipflux", "InfluxDB database name")
 	optInfluxRP       = flag.String("influxRP", "", "InfluxDB retention policy")
 	optInfluxBatch    = flag.Int("influxBatch", 10000, "max InfluxDB write batch size")
 	optInfluxTime     = flag.Duration("influxTime", time.Duration(time.Second), "InfluxDB write interval")
@@ -154,6 +155,11 @@ func (req *Req) rewrite(rec *ipfix.DataRecord) (*influx.Point, error) {
 			switch dir {
 			case 0: tags["dir"] = "in"
 			case 1: tags["dir"] = "out"
+			}
+
+		case "interfaceName":
+			if *optKeyInterface {
+				tags["ifname"] = field.Value.(string)
 			}
 
 		case "observationPointId":       tags["obs_id"] = fmt.Sprintf("%d", field.Value)
